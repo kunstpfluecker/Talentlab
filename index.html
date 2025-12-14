@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">cd "/Users/vico/Neuer Ordner/web"
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentLab | Spieler-Stammdaten</title>
+  <style>
+    :root {
+      --bg: #0c0c10;
+      --bg-2: #16161d;
+      --panel: rgba(255, 255, 255, 0.03);
+      --panel-strong: rgba(255, 255, 255, 0.06);
+      --text: #f7f7fb;
+      --muted: #c6cad8;
+      --accent: #e10600;
+      --accent-2: #ff4d5a;
+      --border: rgba(255, 255, 255, 0.1);
+      --shadow: 0 12px 46px rgba(0, 0, 0, 0.55);
+      --radius: 16px;
+      font-family: "Montserrat", "Manrope", "Segoe UI Variable Display", "SF Pro Display", "Inter", system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(225, 6, 0, 0.22), transparent 30%),
+        radial-gradient(circle at 80% 20%, rgba(255, 77, 90, 0.18), transparent 28%),
+        linear-gradient(135deg, #0d0d12 0%, #0b0b0f 50%, #13131b 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      gap: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: linear-gradient(120deg, rgba(225, 6, 0, 0.14), rgba(0, 0, 0, 0.65));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      font-size: 18px;
+      text-transform: uppercase;
+    }
+
+    .pill {
+      background: rgba(225, 6, 0, 0.12);
+      border: 1px solid rgba(225, 6, 0, 0.4);
+      color: #ffe6e8;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+    }
+
+    .tabs {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .tab {
+      border: none;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.12s ease, color 0.12s ease;
+    }
+
+    .tab.active {
+      background: linear-gradient(120deg, rgba(225, 6, 0, 0.26), rgba(255, 77, 90, 0.18));
+      color: var(--text);
+      border: 1px solid rgba(225, 6, 0, 0.45);
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    h2, h3, h4 {
+      margin: 0 0 12px;
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 12px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    input, select, textarea {
+      background: var(--panel-strong);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border 0.15s ease, background 0.15s ease, transform 0.08s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(225, 6, 0, 0.6);
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-1px);
+    }
+
+    textarea { min-height: 70px; resize: vertical; }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      grid-column: 1 / -1;
+      margin-top: 4px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s ease, filter 0.15s ease;
+    }
+
+    button:active { transform: translateY(1px); }
+
+    .primary {
+      background: linear-gradient(120deg, #e10600, #b00012);
+      color: #fff0f1;
+      box-shadow: 0 10px 24px rgba(225, 6, 0, 0.35);
+    }
+
+    .ghost {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .players {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+
+    .card {
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -30% auto auto -30%;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(225, 6, 0, 0.18), transparent 70%);
+      transform: rotate(18deg);
+      pointer-events: none;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .name {
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .tag.accent { background: rgba(225, 6, 0, 0.2); color: #ffe6e8; border-color: rgba(225, 6, 0, 0.5); }
+    .tag.warn { background: rgba(255, 77, 90, 0.2); color: #ffd3d6; border-color: rgba(255, 77, 90, 0.45); }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .row span strong { color: var(--text); font-weight: 700; }
+
+    .note {
+      font-size: 13px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      padding: 10px;
+      line-height: 1.45;
+    }
+
+    .bubble {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(225, 6, 0, 0.16);
+      border: 1px solid rgba(225, 6, 0, 0.35);
+      font-size: 12px;
+      color: #ffe6e8;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .color-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      display: inline-block;
+    }
+
+    .table-mini {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .table-mini th, .table-mini td {
+      padding: 8px 6px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+    }
+
+    .table-mini th { color: var(--text); }
+
+    .empty {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1000px) {
+      .view.active { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      header { flex-direction: column; align-items: flex-start; }
+      form { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr; }
+      .actions { justify-content: stretch; }
+      .actions button { width: 100%; }
+      .row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div style="width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, #e10600, #ff4d5a); display: grid; place-items: center; color: #1c0606; font-weight: 900;">TL</div>
+      <div>
+        <div>TalentLab</div>
+        <div style="color: var(--muted); font-size: 13px;">Spieler &amp; Turniere</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-view="players">Spieler</button>
+      <button class="tab" data-view="tournaments">Turniere</button>
+    </div>
+  </header>
+
+  <section id="view-players" class="view active">
+    <section class="panel">
+      <h2>Spieler erfassen</h2>
+      <p class="subtitle">Schneller Capture-Flow für Scouts. Fokus auf Kernprofil + Kontaktfähigkeit.</p>
+      <form id="player-form">
+        <label>
+          Vorname *
+          <input name="firstName" required placeholder="z.B. Noah" autocomplete="off" />
+        </label>
+        <label>
+          Nachname *
+          <input name="lastName" required placeholder="z.B. Kwan" autocomplete="off" />
+        </label>
+        <label>
+          Geburtstag *
+          <input name="birthdate" type="date" required placeholder="dd.mm.yyyy" />
+        </label>
+        <label>
+          Alter
+          <input name="age" type="number" min="12" max="50" placeholder="wird automatisch berechnet" readonly />
+        </label>
+        <label>
+          Nationalität *
+          <input name="nation" list="country-options" placeholder="Deutschland" autocomplete="off" required />
+        </label>
+        <label>
+          spielt in (Land)
+          <input name="playsIn" list="country-options" placeholder="Deutschland" autocomplete="off" />
+        </label>
+        <label>
+          Verein
+          <input name="club" placeholder="SV Waldhof Mannheim" />
+        </label>
+        <label>
+          Ligahöhe
+          <select name="level">
+            <option value="">Bitte wählen</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+          </select>
+        </label>
+        <label>
+          Größe
+          <input name="height" placeholder="1,83 m" />
+        </label>
+        <label>
+          starker Fuß
+          <select name="foot">
+            <option value="">Bitte wählen</option>
+            <option>Links</option>
+            <option>Rechts</option>
+            <option>Beidfüßig</option>
+          </select>
+        </label>
+        <label class="full">
+          Notizen
+          <textarea name="note" placeholder="Match-Notizen, Stärken, Agentur, Kontakt, etc."></textarea>
+        </label>
+        <div class="actions">
+          <button type="reset" class="ghost">Felder leeren</button>
+          <button type="submit" class="primary">Spieler speichern</button>
+        </div>
+      </form>
+      <datalist id="country-options"></datalist>
+    </section>
+
+    <section class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px;">
+        <div>
+          <h2>Board</h2>
+          <p class="subtitle">Gefilterte Sicht auf erfasste Talente.</p>
+        </div>
+        <div class="pill" id="count-pill">0 Spieler</div>
+      </div>
+
+      <div class="filters">
+        <input id="search" placeholder="Suche Name, Verein, Land..." />
+        <select id="country-filter">
+          <option value="">Alle Einsatzländer</option>
+        </select>
+        <select id="foot-filter">
+          <option value="">Alle starken Füße</option>
+          <option>Links</option>
+          <option>Rechts</option>
+          <option>Beidfüßig</option>
+        </select>
+      </div>
+
+      <div class="players" id="players"></div>
+    </section>
+  </section>
+
+  <section id="view-tournaments" class="view">
+    <section class="panel">
+      <h2>Turnier/Scoutingevent</h2>
+      <p class="subtitle">Erstelle Events und verwalte Teams inkl. Trikotfarben.</p>
+      <form id="tournament-form">
+        <label>
+          Name *
+          <input name="name" required placeholder="z.B. U19 Süd-West Showcase" autocomplete="off" />
+        </label>
+        <label>
+          Ort / Land *
+          <input name="country" list="country-options" required placeholder="Deutschland" autocomplete="off" />
+        </label>
+        <label>
+          Startdatum
+          <input name="start" type="date" />
+        </label>
+        <label>
+          Enddatum
+          <input name="end" type="date" />
+        </label>
+        <label class="full">
+          Notizen
+          <textarea name="note" placeholder="Fokus auf 2006er, regionale Talente, Scouts vor Ort."></textarea>
+        </label>
+        <div class="actions">
+          <button type="reset" class="ghost">Reset</button>
+          <button type="submit" class="primary">Turnier speichern</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px;">
+        <div>
+          <h2>Turniere</h2>
+          <p class="subtitle">Karten mit Teams &amp; Event-Details.</p>
+        </div>
+        <div class="pill" id="tournament-count">0 Turniere</div>
+      </div>
+      <div class="filters">
+        <input id="tournament-search" placeholder="Suche Turnier, Land, Notiz..." />
+        <select id="tournament-country-filter">
+          <option value="">Alle Länder</option>
+        </select>
+        <select id="tournament-team-filter">
+          <option value="">Alle Teamgrößen</option>
+          <option value="0">Keine Teams</option>
+          <option value="1-4">1-4 Teams</option>
+          <option value="5+">5+ Teams</option>
+        </select>
+      </div>
+      <div class="players" id="tournament-cards"></div>
+    </section>
+
+    <section class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px;">
+        <div>
+          <h2>Mannschaften &amp; Kader</h2>
+          <p class="subtitle">Wähle ein Turnier, lege Teams an, weise Spieler + Nummern zu.</p>
+        </div>
+        <div class="pill" id="team-count">0 Teams</div>
+      </div>
+      <form id="team-form">
+        <label class="full">
+          Turnier auswählen *
+          <select name="tournamentId" id="tournament-select" required></select>
+        </label>
+        <label>
+          Teamname *
+          <input name="teamName" required placeholder="Team Nord U19" autocomplete="off" />
+        </label>
+        <label>
+          Trikotfarbe
+          <input name="kitColor" type="color" value="#22c55e" />
+        </label>
+        <div class="full" style="display: grid; gap: 10px;">
+          <div style="display: grid; grid-template-columns: 1fr 120px auto; gap: 8px; align-items: end;">
+            <label>
+              Spieler wählen
+              <select id="roster-player">
+                <option value="">Spieler wählen</option>
+              </select>
+            </label>
+            <label>
+              Nummer
+              <input id="roster-number" type="number" min="1" max="99" placeholder="10" />
+            </label>
+            <button type="button" class="ghost" id="add-roster">Hinzufügen</button>
+          </div>
+          <div id="roster-list" class="empty">Noch keine Spieler im Kader.</div>
+        </div>
+        <div class="actions">
+          <button type="reset" class="ghost" id="team-reset">Reset</button>
+          <button type="submit" class="primary">Team speichern</button>
+        </div>
+      </form>
+    </section>
+  </section>
+
+  <script>
+    const viewSections = {
+      players: document.getElementById("view-players"),
+      tournaments: document.getElementById("view-tournaments"),
+    };
+    const tabs = document.querySelectorAll(".tab");
+
+    const form = document.getElementById("player-form");
+    const playersEl = document.getElementById("players");
+    const searchEl = document.getElementById("search");
+    const countryFilterEl = document.getElementById("country-filter");
+    const footFilterEl = document.getElementById("foot-filter");
+    const countPill = document.getElementById("count-pill");
+    const countryDataList = document.getElementById("country-options");
+    const birthdateInput = form.elements["birthdate"];
+    const ageInput = form.elements["age"];
+
+    const tournamentForm = document.getElementById("tournament-form");
+    const tournamentCardsEl = document.getElementById("tournament-cards");
+    const tournamentSearchEl = document.getElementById("tournament-search");
+    const tournamentCountryFilterEl = document.getElementById("tournament-country-filter");
+    const tournamentTeamFilterEl = document.getElementById("tournament-team-filter");
+    const tournamentCountPill = document.getElementById("tournament-count");
+
+    const teamForm = document.getElementById("team-form");
+    const tournamentSelectEl = document.getElementById("tournament-select");
+    const teamCountPill = document.getElementById("team-count");
+    const rosterPlayerSelect = document.getElementById("roster-player");
+    const rosterNumberInput = document.getElementById("roster-number");
+    const addRosterBtn = document.getElementById("add-roster");
+    const rosterListEl = document.getElementById("roster-list");
+
+    const countries = [
+      "Afghanistan","Albanien","Algerien","Andorra","Angola","Antigua und Barbuda","Argentinien","Armenien","Aserbaidschan","Australien","Ägypten","Äquatorialguinea","Äthiopien","Bahamas","Bahrain","Bangladesch","Barbados","Belgien","Belize","Benin","Bhutan","Bolivien","Bosnien und Herzegowina","Botsuana","Brasilien","Brunei","Bulgarien","Burkina Faso","Burundi","Chile","China","Costa Rica","Dänemark","Deutschland","Dominica","Dominikanische Republik","Dschibuti","Ecuador","El Salvador","Elfenbeinküste","Eritrea","Estland","Eswatini","Fidschi","Finnland","Frankreich","Gabun","Gambia","Georgien","Ghana","Grenada","Griechenland","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Indien","Indonesien","Irak","Iran","Irland","Island","Israel","Italien","Jamaika","Japan","Jemen","Jordanien","Kambodscha","Kamerun","Kanada","Kap Verde","Kasachstan","Katar","Kenia","Kirgisistan","Kiribati","Kolumbien","Komoren","Kongo, Demokratische Republik","Kongo, Republik","Kosovo","Kroatien","Kuba","Kuwait","Laos","Lesotho","Lettland","Libanon","Liberia","Libyen","Liechtenstein","Litauen","Luxemburg","Madagaskar","Malawi","Malaysia","Malediven","Mali","Malta","Marokko","Marshallinseln","Mauretanien","Mauritius","Mexiko","Mikronesien","Moldau","Monaco","Mongolei","Montenegro","Mosambik","Myanmar","Namibia","Nauru","Nepal","Neuseeland","Nicaragua","Niederlande","Niger","Nigeria","Nordmazedonien","Norwegen","Oman","Österreich","Osttimor","Pakistan","Palau","Panama","Papua-Neuguinea","Paraguay","Peru","Philippinen","Polen","Portugal","Ruanda","Rumänien","Russland","Sambia","Samoa","San Marino","São Tomé und Príncipe","Saudi-Arabien","Schweden","Schweiz","Senegal","Serbien","Seychellen","Sierra Leone","Simbabwe","Singapur","Slowakei","Slowenien","Somalia","Spanien","Sri Lanka","St. Kitts und Nevis","St. Lucia","St. Vincent und die Grenadinen","Südafrika","Sudan","Südsudan","Südkorea","Suriname","Syrien","Tadschikistan","Tansania","Thailand","Togo","Tonga","Trinidad und Tobago","Tschad","Tschechien","Tunesien","Türkei","Turkmenistan","Tuvalu","Uganda","Ukraine","Ungarn","Uruguay","Usbekistan","Vanuatu","Vatikanstadt","Venezuela","Vereinigte Arabische Emirate","Vereinigtes Königreich","Vereinigte Staaten","Vietnam","Weißrussland","Zentralafrikanische Republik","Zypern"
+    ];
+
+    const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`);
+
+    const samplePlayers = [
+      {
+        id: uuid(),
+        firstName: "Noah",
+        lastName: "Kwan",
+        birthdate: "2003-02-11",
+        nation: "Deutschland",
+        playsIn: "Deutschland",
+        club: "SV Waldhof Mannheim",
+        level: "3. Liga",
+        height: "1,83 m",
+        foot: "Links",
+        note: "Pressingresistenz, progressive Pässe, hohe Laufleistung."
+      },
+      {
+        id: uuid(),
+        firstName: "Liam",
+        lastName: "Faber",
+        birthdate: "2002-07-28",
+        nation: "Österreich",
+        playsIn: "Deutschland",
+        club: "Fortuna Köln",
+        level: "Regionalliga West",
+        height: "1,88 m",
+        foot: "Rechts",
+        note: "Aufbau stark, Diagonalbälle, Antizipation."
+      },
+      {
+        id: uuid(),
+        firstName: "Jaden",
+        lastName: "Mensah",
+        birthdate: "2004-10-05",
+        nation: "Ghana",
+        playsIn: "Deutschland",
+        club: "SV Babelsberg 03",
+        level: "Regionalliga Nordost",
+        height: "1,79 m",
+        foot: "Beidfüßig",
+        note: "Explosiv im 1v1, inverse Läufe, Decision-Making inkonstant."
+      }
+    ];
+
+    const sampleTournaments = [
+      {
+        id: uuid(),
+        name: "U19 Süd-West Showcase",
+        country: "Deutschland",
+        start: "2024-07-12",
+        end: "2024-07-14",
+        note: "Fokus 2006er, DFB-Scouts vor Ort.",
+        teams: []
+      },
+      {
+        id: uuid(),
+        name: "Winter Cup Linz",
+        country: "Österreich",
+        start: "2024-12-03",
+        end: "2024-12-05",
+        note: "Indoor, schnelle Spiele, 2x20.",
+        teams: []
+      }
+    ];
+
+    const playersState = [...samplePlayers];
+    const tournamentsState = [...sampleTournaments];
+    let currentRoster = [];
+
+    const populateCountries = () => {
+      countryDataList.innerHTML = countries.map(c => `<option value="${c}"></option>`).join("");
+      countryFilterEl.innerHTML = ['<option value="">Alle Einsatzländer</option>', ...countries.map(c => `<option value="${c}">${c}</option>`)].join("");
+      tournamentCountryFilterEl.innerHTML = ['<option value="">Alle Länder</option>', ...countries.map(c => `<option value="${c}">${c}</option>`)].join("");
+    };
+
+    const computeAge = (dateStr) => {
+      if (!dateStr) return "";
+      const dob = new Date(dateStr);
+      if (Number.isNaN(dob.getTime())) return "";
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+      return age;
+    };
+
+    const renderPlayers = () => {
+      const search = searchEl.value.toLowerCase();
+      const country = countryFilterEl.value;
+      const foot = footFilterEl.value;
+
+      const filtered = playersState.filter((p) => {
+        const text = [p.firstName, p.lastName, p.club, p.level, p.note, p.nation, p.playsIn].join(" ").toLowerCase();
+        const matchesSearch = !search || text.includes(search);
+        const matchesCountry = !country || (p.playsIn && p.playsIn.toLowerCase() === country.toLowerCase());
+        const matchesFoot = !foot || (p.foot && p.foot.toLowerCase() === foot.toLowerCase());
+        return matchesSearch && matchesCountry && matchesFoot;
+      });
+
+      countPill.textContent = `${filtered.length} Spieler`;
+      playersEl.innerHTML = filtered.map((p) => playerCardTemplate(p)).join("");
+      populatePlayerSelect();
+    };
+
+    const playerCardTemplate = (p) => {
+      const age = computeAge(p.birthdate);
+      const fullName = [p.firstName, p.lastName].filter(Boolean).join(" ");
+      const levelLabel = p.level ? `Liga ${p.level}` : "—";
+      return `
+      <article class="card">
+        <div class="card-head">
+          <div>
+            <div class="name">${fullName || "Unbenannt"}</div>
+            <div class="meta">${p.club || "vereinslos"} • ${levelLabel}</div>
+          </div>
+          <div class="bubble">${p.playsIn || "Einsatzland?"}</div>
+        </div>
+        <div class="row">
+          <span><strong>Geb.:</strong> ${p.birthdate || "—"}</span>
+          <span><strong>Alter:</strong> ${age || "—"}</span>
+          <span><strong>Nation:</strong> ${p.nation || "—"}</span>
+        </div>
+        <div class="row">
+          <span><strong>Größe:</strong> ${p.height || "—"}</span>
+          <span><strong>starker Fuß:</strong> ${p.foot || "—"}</span>
+          <span><strong>spielt in:</strong> ${p.playsIn || "—"}</span>
+        </div>
+        ${p.note ? `<div class="note">${p.note}</div>` : ""}
+      </article>
+    `};
+
+    const populatePlayerSelect = () => {
+      rosterPlayerSelect.innerHTML = ['<option value="">Spieler wählen</option>', ...playersState.map(p => `<option value="${p.id}">${p.firstName} ${p.lastName}</option>`)].join("");
+    };
+
+    const renderTournamentCards = () => {
+      const search = tournamentSearchEl.value.toLowerCase();
+      const country = tournamentCountryFilterEl.value;
+      const teamFilter = tournamentTeamFilterEl.value;
+
+      const filtered = tournamentsState.filter((t) => {
+        const text = [t.name, t.country, t.note].join(" ").toLowerCase();
+        const matchesSearch = !search || text.includes(search);
+        const matchesCountry = !country || (t.country && t.country.toLowerCase() === country.toLowerCase());
+        let matchesTeam = true;
+        const teamCount = t.teams?.length || 0;
+        if (teamFilter === "0") matchesTeam = teamCount === 0;
+        else if (teamFilter === "1-4") matchesTeam = teamCount >= 1 && teamCount <= 4;
+        else if (teamFilter === "5+") matchesTeam = teamCount >= 5;
+        return matchesSearch && matchesCountry && matchesTeam;
+      });
+
+      tournamentCountPill.textContent = `${filtered.length} Turniere`;
+      tournamentCardsEl.innerHTML = filtered.map(t => tournamentCardTemplate(t)).join("");
+      syncTournamentSelect();
+    };
+
+    const tournamentCardTemplate = (t) => {
+      const teamCount = t.teams?.length || 0;
+      const dateLine = [t.start, t.end].filter(Boolean).join(" – ");
+      const teamBadges = (t.teams || []).slice(0, 3).map(team => `
+        <span class="badge">
+          <span class="color-dot" style="background:${team.kitColor || "#4ade80"}"></span>${team.name}
+        </span>`).join("");
+      const extraTeams = teamCount > 3 ? `<span class="badge">+${teamCount - 3}</span>` : "";
+      return `
+        <article class="card tournament-card" data-id="${t.id}">
+          <div class="card-head">
+            <div>
+              <div class="name">${t.name}</div>
+              <div class="meta">${t.country || "—"} ${dateLine ? "• " + dateLine : ""}</div>
+            </div>
+            <div class="bubble">${teamCount} Teams</div>
+          </div>
+          ${t.note ? `<div class="note">${t.note}</div>` : ""}
+          ${(teamBadges || extraTeams) ? `<div class="tags">${teamBadges}${extraTeams}</div>` : ""}
+        </article>
+      `;
+    };
+
+    const syncTournamentSelect = () => {
+      const options = tournamentsState.map(t => `<option value="${t.id}">${t.name}</option>`);
+      tournamentSelectEl.innerHTML = ['<option value="">Turnier wählen</option>', ...options].join("");
+      if (!tournamentSelectEl.value && tournamentsState.length) {
+        tournamentSelectEl.value = tournamentsState[0].id;
+      }
+      updateTeamCountPill();
+    };
+
+    const updateTeamCountPill = () => {
+      const selected = tournamentsState.find(t => t.id === tournamentSelectEl.value);
+      const count = selected ? (selected.teams?.length || 0) : 0;
+      teamCountPill.textContent = `${count} Teams`;
+    };
+
+    const rosterTable = () => {
+      if (!currentRoster.length) return `<div class="empty">Noch keine Spieler im Kader.</div>`;
+      const rows = currentRoster.map(item => {
+        const player = playersState.find(p => p.id === item.playerId);
+        const name = player ? `${player.firstName} ${player.lastName}` : "Unbekannt";
+        return `<tr><td>${name}</td><td>#${item.number}</td><td><button type="button" class="ghost" data-remove="${item.playerId}" style="padding:6px 8px;">Entfernen</button></td></tr>`;
+      }).join("");
+      return `<table class="table-mini"><thead><tr><th>Spieler</th><th>Nr</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+    };
+
+    const renderRoster = () => {
+      rosterListEl.innerHTML = rosterTable();
+    };
+
+    const addToRoster = () => {
+      const playerId = rosterPlayerSelect.value;
+      const number = rosterNumberInput.value;
+      if (!playerId || !number) return;
+      const existsPlayer = currentRoster.some(r => r.playerId === playerId);
+      const existsNumber = currentRoster.some(r => r.number === number);
+      if (existsPlayer || existsNumber) return;
+      currentRoster.push({ playerId, number });
+      rosterPlayerSelect.value = "";
+      rosterNumberInput.value = "";
+      renderRoster();
+    };
+
+    addRosterBtn.addEventListener("click", addToRoster);
+    rosterListEl.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-remove]");
+      if (!btn) return;
+      const id = btn.getAttribute("data-remove");
+      currentRoster = currentRoster.filter(r => r.playerId !== id);
+      renderRoster();
+    });
+
+    teamForm.addEventListener("reset", () => {
+      currentRoster = [];
+      renderRoster();
+      updateTeamCountPill();
+    });
+
+    teamForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(teamForm));
+      if (!data.tournamentId) return;
+      const target = tournamentsState.find(t => t.id === data.tournamentId);
+      if (!target) return;
+      const team = {
+        id: uuid(),
+        name: data.teamName.trim(),
+        kitColor: data.kitColor || "#22c55e",
+        roster: [...currentRoster],
+      };
+      target.teams = target.teams || [];
+      target.teams.unshift(team);
+      currentRoster = [];
+      teamForm.reset();
+      renderRoster();
+      updateTeamCountPill();
+      renderTournamentCards();
+    });
+
+    tournamentCardsEl.addEventListener("click", (e) => {
+      const card = e.target.closest(".tournament-card");
+      if (!card) return;
+      tournamentSelectEl.value = card.getAttribute("data-id");
+      updateTeamCountPill();
+      currentRoster = [];
+      renderRoster();
+    });
+
+    tournamentSelectEl.addEventListener("change", () => {
+      currentRoster = [];
+      renderRoster();
+      updateTeamCountPill();
+    });
+
+    tournamentForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(tournamentForm));
+      const trimmed = Object.fromEntries(Object.entries(data).map(([k, v]) => [k, v.trim()]));
+      const t = { ...trimmed, id: uuid(), teams: [] };
+      tournamentsState.unshift(t);
+      tournamentForm.reset();
+      renderTournamentCards();
+    });
+
+    tournamentSearchEl.addEventListener("input", renderTournamentCards);
+    tournamentCountryFilterEl.addEventListener("change", renderTournamentCards);
+    tournamentTeamFilterEl.addEventListener("change", renderTournamentCards);
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const target = tab.getAttribute("data-view");
+        tabs.forEach(t => t.classList.toggle("active", t === tab));
+        Object.entries(viewSections).forEach(([key, section]) => {
+          section.classList.toggle("active", key === target);
+        });
+      });
+    });
+
+    const render = renderPlayers;
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+      const trimmed = Object.fromEntries(Object.entries(data).map(([k, v]) => [k, v.trim()]));
+      const player = { ...trimmed, id: uuid() };
+      player.age = computeAge(trimmed.birthdate);
+      playersState.unshift(player);
+      form.reset();
+      ageInput.readOnly = true;
+      renderPlayers();
+    });
+
+    birthdateInput.addEventListener("change", () => {
+      const age = computeAge(birthdateInput.value);
+      ageInput.value = age || "";
+    });
+
+    searchEl.addEventListener("input", renderPlayers);
+    countryFilterEl.addEventListener("change", renderPlayers);
+    footFilterEl.addEventListener("change", renderPlayers);
+
+    // Ensure date input is empty on load (no today default) and age cleared
+    birthdateInput.value = "";
+    ageInput.value = "";
+
+    populateCountries();
+    renderPlayers();
+    renderTournamentCards();
+    renderRoster();
+    syncTournamentSelect();
+  </script>
+</body>
+</html>

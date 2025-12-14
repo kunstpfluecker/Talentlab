@@ -411,20 +411,15 @@ export function TournamentView({ initialTab = "overview" }: { initialTab?: TabKe
                             <Link href={`/players/${p.id}`} className="text-white font-semibold hover:underline">
                               {p.firstName} {p.lastName}
                             </Link>
-                            {(() => {
-                              const isActive = evalForm.playerId === p.id && (tab as TabKey) === "evaluation";
-                              return (
                             <button
                               onClick={() => {
                                 setEvalForm((prev) => ({ ...prev, playerId: p.id }));
                                 setTab("evaluation");
                               }}
-                              className={`rounded-full px-3 py-1 text-xs ${isActive ? "bg-[#e10600]" : "border border-white/20"} text-white`}
+                              className={`rounded-full px-3 py-1 text-xs ${evalForm.playerId === p.id && (tab as TabKey) === "evaluation" ? "bg-[#e10600]" : "border border-white/20"} text-white`}
                             >
                               Bewerten
                             </button>
-                              );
-                            })()}
                           </div>
                           <div className="text-xs text-slate-300">{p.position || "Position n/a"} • {p.club || "—"}</div>
                           <div className="mt-1 text-xs text-slate-400">Bewertungen: {evaluations[p.id]?.length || 0}</div>
